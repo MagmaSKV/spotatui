@@ -409,6 +409,7 @@ impl StreamingPlayer {
       is_group: false,
       disable_volume: false,
       volume_steps: 64,
+      emit_set_queue_events: true,
     };
 
     info!("Initializing Spirc with device_id={}", session.device_id());

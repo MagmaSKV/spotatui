@@ -42,6 +42,9 @@ use crate::infra::network::{IoEvent, Network};
 #[cfg(feature = "streaming")]
 use crate::infra::player;
 use crate::tui::banner::BANNER;
+use std::path::Path;  // Añade esta línea
+use crate::infra::network::requests::spotify_get_typed_compat_for_with_refresh;  // Añade esta línea
+use rspotify::model::user::PrivateUser;  // Añade esta línea
 
 use anyhow::{anyhow, Result};
 use backtrace::Backtrace;
@@ -150,26 +153,24 @@ async fn account_supports_native_streaming(
       Some(rspotify::model::SubscriptionLevel::Premium) => (true, None),
       Some(level) => {
         let plan = subscription_level_label(level);
-        // CAMBIO: En lugar de deshabilitar el streaming, solo mostramos una advertencia
+        // CAMBIO: Permitir cuentas gratuitas
         info!(
           "spotify {} account detected: native streaming enabled with manual free account support",
           plan
         );
-        // Ya no mostramos el mensaje de error ni deshabilitamos el streaming
-        (true, Some("Cuenta gratuita detectada - la reproducción debería funcionar con el fork modificado"))
+        (true, Some("Cuenta gratuita detectada - reproducción habilitada"))
       }
       None => {
-        // CAMBIO: También permitimos cuando el nivel es desconocido
-        info!("spotify account level unknown: native streaming enabled (modified fork)");
-        (true, Some("Nivel de cuenta desconocido - se asume que funciona"))
+        info!("spotify account level unknown: native streaming enabled");
+        (true, Some("Nivel de cuenta desconocido - asumiendo que funciona"))
       }
     },
     Err(e) => {
       info!(
-        "spotify account level check failed ({}); native streaming enabled anyway (modified fork)",
+        "spotify account level check failed ({}); native streaming enabled anyway",
         e
       );
-      (true, Some("No se pudo verificar el plan - se asume que funciona"))
+      (true, Some("No se pudo verificar el plan - asumiendo que funciona"))
     }
   }
 }
@@ -759,7 +760,7 @@ screens more often and cost more CPU. Animation-heavy views keep their separate 
     #[cfg(feature = "streaming")]
     let (streaming_supported_for_account, streaming_startup_status_message) =
       if client_config.enable_streaming {
-        account_supports_native_streaming(&spotify).await
+        account_supports_native_streaming(&spotify, &final_token_cache_path, &app).await
       } else {
         (false, None)
       };
