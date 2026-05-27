@@ -128,7 +128,7 @@ fn update_macos_metadata(
 fn subscription_level_label(level: rspotify::model::SubscriptionLevel) -> &'static str {
   match level {
     rspotify::model::SubscriptionLevel::Premium => "premium",
-    rspotify::model::SubscriptionLevel::Free => "free",
+    rspotify::model::SubscriptionLevel::Free => "free (soportado con fork modificado)",
   }
 }
 
@@ -152,42 +152,26 @@ async fn account_supports_native_streaming(
       Some(rspotify::model::SubscriptionLevel::Premium) => (true, None),
       Some(level) => {
         let plan = subscription_level_label(level);
+        // CAMBIO: En lugar de deshabilitar el streaming, solo mostramos una advertencia
         info!(
-          "spotify {} account detected: playback is unavailable (native streaming and Web API playback controls require premium)",
+          "spotify {} account detected: native streaming enabled with manual free account support",
           plan
         );
-        println!(
-          "Spotify {} account detected. Playback is unavailable in spotatui: native streaming (librespot) and Web API playback controls both require Premium. Browsing/search/library views still work.",
-          plan
-        );
-        (
-          false,
-          Some("Spotify Free account: playback controls unavailable (Premium required)"),
-        )
+        // Ya no mostramos el mensaje de error ni deshabilitamos el streaming
+        (true, Some("Cuenta gratuita detectada - la reproducción debería funcionar con el fork modificado"))
       }
       None => {
-        info!("spotify account level unknown: native streaming disabled to avoid librespot exit");
-        println!(
-          "Could not determine Spotify subscription level. Native streaming is disabled to avoid startup exit. If this account is not Premium, playback controls will not work; browsing/search/library views still work."
-        );
-        (
-          false,
-          Some("Could not verify Spotify plan: native streaming disabled"),
-        )
+        // CAMBIO: También permitimos cuando el nivel es desconocido
+        info!("spotify account level unknown: native streaming enabled (modified fork)");
+        (true, Some("Nivel de cuenta desconocido - se asume que funciona"))
       }
     },
     Err(e) => {
       info!(
-        "spotify account level check failed ({}); native streaming disabled to avoid librespot exit",
+        "spotify account level check failed ({}); native streaming enabled anyway (modified fork)",
         e
       );
-      println!(
-        "Could not verify Spotify subscription level. Native streaming is disabled to avoid startup exit. If this account is not Premium, playback controls will not work; browsing/search/library views still work."
-      );
-      (
-        false,
-        Some("Could not verify Spotify plan: native streaming disabled"),
-      )
+      (true, Some("No se pudo verificar el plan - se asume que funciona"))
     }
   }
 }
