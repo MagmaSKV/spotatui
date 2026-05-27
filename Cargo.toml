@@ -58,11 +58,11 @@ image = { version = "0.25", optional = true }
 vergen = "=9.0.6"
 vergen-lib = "=9.1.0"
 vergen-gitcl = "=1.0.8"
-librespot-core = { version = "0.8", optional = true }
-librespot-connect = { version = "0.8", optional = true }
-librespot-oauth = { version = "0.8", optional = true }
-librespot-metadata = { version = "0.8", optional = true }
-librespot-protocol = { version = "0.8", optional = true, default-features = false }
+librespot-core = { git = "https://github.com/MagmaSKV/librespot", branch = "dev", optional = true }
+librespot-connect = { git = "https://github.com/MagmaSKV/librespot", branch = "dev", optional = true }
+librespot-oauth = { git = "https://github.com/MagmaSKV/librespot", branch = "dev", optional = true }
+librespot-metadata = { git = "https://github.com/MagmaSKV/librespot", branch = "dev", optional = true }
+librespot-protocol = { git = "https://github.com/MagmaSKV/librespot", branch = "dev", optional = true, default-features = false }
 protobuf = { version = "3.7", optional = true }
 futures = "0.3.32"
 tokio-tungstenite = { version = "0.29", features = ["rustls-tls-webpki-roots"] }
@@ -71,16 +71,16 @@ keepawake = "0.6"
 
 [target.'cfg(all(target_os = "linux", not(target_env = "musl")))'.dependencies]
 pipewire = { version = "0.10", optional = true }
-librespot-playback = { version = "0.8", optional = true, default-features = false, features = ["alsa-backend"] }
+librespot-playback = { git = "https://github.com/MagmaSKV/librespot", branch = "dev", optional = true, default-features = false, features = ["alsa-backend"] }
 
 [target.'cfg(all(target_os = "linux", target_env = "musl"))'.dependencies]
-librespot-playback = { version = "0.8", optional = true, default-features = false, features = ["rodio-backend"] }
+librespot-playback = { git = "https://github.com/MagmaSKV/librespot", branch = "dev", optional = true, default-features = false, features = ["rodio-backend"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 # On Windows we default to rodio for audio output.
 # Without this, librespot-playback falls back to the `pipe` sink which writes raw audio bytes
 # to stdout (breaking the TUI and producing no audible output).
-librespot-playback = { version = "0.8", optional = true, default-features = false, features = ["rodio-backend"] }
+librespot-playback = { git = "https://github.com/MagmaSKV/librespot", branch = "dev", optional = true, default-features = false, features = ["rodio-backend"] }
 
 # MPRIS D-Bus support (Linux only)
 [target.'cfg(target_os = "linux")'.dependencies]
@@ -91,7 +91,7 @@ mpris-server = { version = "0.10", optional = true }
 # Rodio has compatibility issues with macOS CoreAudio and Bluetooth devices (AirPods, etc.)
 # causing SIGSEGV crashes. See Issue #9 and #20.
 [target.'cfg(target_os = "macos")'.dependencies]
-librespot-playback = { version = "0.8", optional = true, default-features = false, features = ["portaudio-backend"] }
+librespot-playback = { git = "https://github.com/MagmaSKV/librespot", branch = "dev", optional = true, default-features = false, features = ["portaudio-backend"] }
 objc2-media-player = { version = "0.3", optional = true }
 objc2-foundation = { version = "0.3", optional = true }
 objc2-app-kit = { version = "0.3", optional = true, default-features = false, features = ["NSImage"] }
